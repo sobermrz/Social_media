@@ -133,7 +133,7 @@ router.put('/like/:id', auth, async (req, res) => {
 })
 
 //@route PUT api/posts/unlike/:id
-//@desc Like a post
+//@desc Unlike a post
 //access Private
 router.put('/unlike/:id', auth, async (req, res) => {
   try {
@@ -184,9 +184,16 @@ router.post("/comment/:id", [
       avatar: user.avatar,
       user: req.user.id
     }
+  
+    //filter bad words
+    var Filter = require('bad-words'),
+    filter = new Filter();
+ 
+    newComment.text = filter.clean(newComment.text);
 
     post.comments.unshift(newComment)
 
+    //save to database
     await post.save()
 
     res.json(post.comments)
